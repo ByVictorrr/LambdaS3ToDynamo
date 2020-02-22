@@ -1,1 +1,0 @@
-# LambdaS3ToDynamo
