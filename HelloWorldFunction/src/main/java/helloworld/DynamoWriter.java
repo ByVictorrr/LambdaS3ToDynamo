@@ -1,11 +1,18 @@
 package helloworld;
 
-import com.amazonaws.services.s3.event.S3EventNotification;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.document.Item;
+import com.amazonaws.services.dynamodbv2.document.Table;
+import com.google.gson.JsonObject;
+import org.apache.commons.io.FilenameUtils;
+import org.json.JSONObject;
 
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 /**
  * Singleton class that takes the files from the s3 put event
@@ -14,50 +21,61 @@ import java.util.stream.Collectors;
  */
 public class DynamoWriter {
 
-    private static String bucketName;
-    private DynamoWriter instance;
+    private static DynamoWriter instance;
     private DynamoWriter(){}
 
-    public DynamoWriter getInstance() {
-        if (this.instance == null)
-            this.instance= new DynamoWriter();
+    public static DynamoWriter getInstance() {
+        if (instance == null)
+            instance= new DynamoWriter();
         return instance;
     }
 
-    private void write(final S3EventNotification input) {
-        try {
+    /**
+     * All the magic is in here
+     * @param bucketName
+     */
+    public void write(String bucketName, String dynamoTable)
+    throws Exception
+    {
+        S3Stream s3Stream = new S3Stream(bucketName);
+        Device device;
+        // step 1 - read bucket for all root folders names
+        List<String> folders = s3Stream.readFolders();
+        folders.remove("images"); // exclude images
+        // step 2 - for every folder get each image and build
+        for (String folder: folders){
+            ManufacturerBuilder manufacturerBuilder = new ManufacturerBuilder(folder);
+            List<String> files = s3Stream.readFiles(folder);
+            // step 3 - get each input stream and form a Device object
+            for (String key: files){
+                // step 4 - Parse input stream to device(device builder)
+                String file = FilenameUtils.getName(key);
+                InputStream is = s3Stream.getFileContents(key);
 
-            List<S3EventNotification.S3Entity> folders = input.getRecords()
-                    .stream().map(f -> f.getS3()).collect(Collectors.toList());
+                // try to find closest matching image
+                String image = s3Stream.findCloseImage(file);
 
-
-            BrandBuilder bb;
-
-            // Step 1 - get bucket name
-            bucketName=folders.get(0).getBucket().getName();
-
-            /* Step 2 - go through each folder created (each contains two folders
-                        1.images(.jpg)
-                        2.info(jsons)
-
-                        Each folder represents a brand
-             */
-            for (S3EventNotification.S3Entity folder : folders) {
-                // key includes sub folders
-                String key = folder.getObject().getKey();
-
-                // Read from folder going through each device
-                bb=new BrandBuilder()
-                // Write Brand to
-
-
+                device = DeviceFactory.getDevice(file, is, image);
+                manufacturerBuilder.append(device);
             }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+            // step 4- write manufacture builder to json object to dynamodb entry
+            writeHelper(manufacturerBuilder.build(), dynamoTable);
+            System.out.println(folder);
 
         }
 
     }
+
+    // Writes to dyanmodb
+    private void writeHelper(JSONObject manufacture, String DynamoTable){
+        AmazonDynamoDB build = AmazonDynamoDBClient.builder().build();
+        DynamoDB dynamoDB = new DynamoDB(build);
+        Table table = dynamoDB.getTable(DynamoTable);
+        Item item = Item.fromJSON(manufacture.toString());
+        table.putItem(item);
+    }
+
+
 
 
 }

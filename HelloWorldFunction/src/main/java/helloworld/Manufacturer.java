@@ -2,7 +2,7 @@ package helloworld;
 
 import java.util.Set;
 
-public class Brand {
+public class Manufacturer {
         private String _name;
         private String link;
         private Set<Device> devices;

@@ -1,42 +1,32 @@
 package helloworld;
 
-import Models.MobileDO;
-import Utility.Pair;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
-import com.amazonaws.services.dynamodbv2.document.Item;
-import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.amazonaws.services.lambda.runtime.events.S3Event;
-import com.amazonaws.services.s3.event.S3EventNotification;
-import com.amazonaws.services.s3.event.S3EventNotification.*;
-
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.amazonaws.services.lambda.runtime.events.SNSEvent;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
  * Handler for requests to Lambda function.
  */
-public class App implements RequestHandler<S3EventNotification, Object> {
+public class App implements RequestHandler<SNSEvent, Object> {
 
-    private AmazonDynamoDB client = new AmazonDynamoDBClient();
-    private String DYNAMODB_TABLE_NAME = "";
+    private final String DYNAMODB_TABLE = "digitaln-mobilehub-2069871194-MobileBrands";
 
+    public Object handleRequest(final SNSEvent input, final Context context) {
+        DynamoWriter dynamoWriter = DynamoWriter.getInstance();
+        try{
+            String srcBucket = input.getRecords().get(0).getSNS().getMessage();
+            dynamoWriter.write(srcBucket, DYNAMODB_TABLE);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
 
-    public Object handleRequest(final S3EventNotification input, final Context context) {
-        // Step 1 - turn input into a list of records
-        // Step 2 - go through each taking the contents of it and parsing for it
-        // Step 3 -
-
-
-        return true;
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/json");
+        headers.put("X-Custom-Header", "application/json");
+        return new GatewayResponse("{}", headers, 200);
     }
 
 
@@ -44,6 +34,5 @@ public class App implements RequestHandler<S3EventNotification, Object> {
 
 
 
-    //================================Dynamodb init=======================\\
 
 }

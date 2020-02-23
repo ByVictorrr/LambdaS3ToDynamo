@@ -1,48 +1,32 @@
 package helloworld;
 
+import java.lang.reflect.Field;
+
 /**
  *  Model of a device in Dynamodb
  */
 public class Device {
-    protected String name, link, dimensions, releaseDate;
+    protected String name, os, manufacturer, notes, image;
 
-    public Device(String name, String link, String dimensions, String releaseDate) {
+    public void setName(String name) {
         this.name = name;
-        this.link = link;
-        this.dimensions = dimensions;
-        this.releaseDate = releaseDate;
+    }
+    public void setOs(String os) {
+        this.os = os;
     }
 
-    public String getName() {
-        return  name;
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
     }
 
-    public void setName(String _name) {
-        this.name=_name;
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String _link) {
-        this.link=_link;
-    }
-
-    public String getReleaseDate() {
-        return releaseDate;
-    }
-
-    public void setReleaseDate(String _releasedate) {
-        releaseDate=_releasedate;
-    }
-
-    public String getDimensions() {
-        return dimensions;
-    }
-
-    public void setDimensions(String _dimensions) {
-        dimensions=_dimensions;
+    public void setImage(String image){this.image=image;}
+    public void setField(String fieldName, String value) throws NoSuchFieldException, IllegalAccessException {
+        Field field = getClass().getDeclaredField(fieldName);
+        field.set(this,value);
     }
 
 }
