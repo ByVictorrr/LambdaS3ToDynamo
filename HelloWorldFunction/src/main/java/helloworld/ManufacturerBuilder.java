@@ -28,6 +28,7 @@ public class ManufacturerBuilder {
     public ManufacturerBuilder(String brandName){
 
 
+        String image_link;
         // Step 1 - add name to brand jsn object
         this.manufacturer = new JSONObject();
         this.devices= new JSONArray();
@@ -36,7 +37,11 @@ public class ManufacturerBuilder {
         try {
             manufacturer.put("name", brandName);
             manufacturer.put("attributes", attributes);
-            attributes.put(0, "https://image_link");
+            /* TODO neon/cassidy
+                image_link = ImageSearcher.getFirstImageLink(brandName)
+             */
+            image_link="https://image_link";
+            attributes.put(0, image_link);
             attributes.put(1,devices);
         }catch (Exception e){
             e.printStackTrace();
@@ -57,28 +62,6 @@ public class ManufacturerBuilder {
     public JSONObject build(){
         return this.manufacturer;
     }
-    /*
-    private static String getBrandImage(String BrandName){
-        String address = "http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=";
-        String query = "java tutorial";
-        String charset = "UTF-8";
-
-        URL url = new URL(address + URLEncoder.encode(query, charset));
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(
-                url.openStream()));
-        String str;
-
-        while ((str = in.readLine()) != null) {
-            System.out.println(str);
-        }
-
-        in.close();
-    }
-
-     */
-
-
 
 
 }

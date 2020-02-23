@@ -82,33 +82,9 @@ public class DeviceFactory {
          */
         String find(JSONObject jObj, String k) throws Exception{
             ObjectNode node = new ObjectMapper().readValue(jObj.toString(), ObjectNode.class);
-
-            String value = null;
-
-
-            if (k.equals("notes")){
-                final String LOGICAL = "logical", PHYSICAL="physical", INSTRUCTIONS="instructions";
-                JsonNode jsonNode = node.get("extraction");
-                ArrayNode arr;
-                if(jsonNode.get(LOGICAL)!=null){
-                    jsonNode = jsonNode.get(LOGICAL);
-                }else{
-                    jsonNode = jsonNode.get(PHYSICAL);
-                }
-                if(jsonNode.get("notes")==null){
-                    arr=(ArrayNode) jsonNode.get(INSTRUCTIONS);
-                }else{
-                    arr=(ArrayNode) jsonNode.get("notes");
-                }
-
-                value = rubahFormat(arr.toPrettyString());
-            }else{
-               value=node.get(k).asText();
-            }
+            String value;
+            value=node.get(k).asText();
             return value;
-        }
-        String rubahFormat(String d){
-            return d.replaceAll("[\\[\\]\\\"]","");
         }
 
 
