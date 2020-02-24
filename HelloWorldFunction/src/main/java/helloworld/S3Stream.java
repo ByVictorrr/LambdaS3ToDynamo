@@ -2,7 +2,6 @@ package helloworld;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.*;
-import com.amazonaws.util.StringUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.InputStream;

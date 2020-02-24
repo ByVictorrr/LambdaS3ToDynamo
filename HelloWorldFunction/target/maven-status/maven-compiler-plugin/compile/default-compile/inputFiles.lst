@@ -1,9 +1,0 @@
-/home/victord/LambdaS3ToDynamo/HelloWorldFunction/src/main/java/helloworld/DeviceFactory.java
-/home/victord/LambdaS3ToDynamo/HelloWorldFunction/src/main/java/helloworld/ManufacturerBuilder.java
-/home/victord/LambdaS3ToDynamo/HelloWorldFunction/src/main/java/helloworld/App.java
-/home/victord/LambdaS3ToDynamo/HelloWorldFunction/src/main/java/helloworld/DynamoWriter.java
-/home/victord/LambdaS3ToDynamo/HelloWorldFunction/src/main/java/helloworld/S3Stream.java
-/home/victord/LambdaS3ToDynamo/HelloWorldFunction/src/main/java/helloworld/Manufacturer.java
-/home/victord/LambdaS3ToDynamo/HelloWorldFunction/src/main/java/helloworld/Device.java
-/home/victord/LambdaS3ToDynamo/HelloWorldFunction/src/main/java/helloworld/StringMatcher.java
-/home/victord/LambdaS3ToDynamo/HelloWorldFunction/src/main/java/helloworld/GatewayResponse.java

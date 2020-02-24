@@ -37,10 +37,7 @@ public class ManufacturerBuilder {
         try {
             manufacturer.put("name", brandName);
             manufacturer.put("attributes", attributes);
-            /* TODO neon/cassidy
-                image_link = ImageSearcher.getFirstImageLink(brandName)
-             */
-            image_link="https://image_link";
+            image_link=ImageSearcher.getFirstImageLink(brandName);
             attributes.put(0, image_link);
             attributes.put(1,devices);
         }catch (Exception e){
